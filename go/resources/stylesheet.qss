@@ -1,0 +1,26 @@
+* {
+    background-color: #262626;
+    margin: 4px;
+    padding: 4px;
+    border-radius: 8px;
+    min-height: 36px;
+    border-color: transparent;
+}
+
+QLabel {
+    color: #ffffff;
+}
+
+QLineEdit {
+    color: #ffffff;
+    background-color: #2e2e2e;
+}
+
+QPushButton {
+    color: #ffffff;
+    min-width: 128px;
+    background-color: #2e2e2e;
+}
+QPushButton:hover {
+    background-color: #323232;
+}
