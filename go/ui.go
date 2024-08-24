@@ -5,11 +5,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/mrjeem/installer/utils"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/widgets"
 )
+
+var current_dir string
 
 func newInstallerUI() *widgets.QMainWindow {
 
@@ -18,8 +19,7 @@ func newInstallerUI() *widgets.QMainWindow {
 	window.SetWindowTitle("Installer")
 	window.Resize2(850, 550)
 
-	// FIXME: Relative path
-	stylesheet, err := os.ReadFile("/home/mrjeem/dev/installer/stylesheet.qss")
+	stylesheet, err := os.ReadFile(filepath.Join(current_dir, "resources", "stylesheet.qss"))
 	if err != nil {
 		log.Printf("[Warning] Could not read style sheet...")
 	} else {
@@ -105,8 +105,12 @@ func browse(parent widgets.QWidget_ITF, dst *string) {
 func main() {
 	app := widgets.NewQApplication(len(os.Args), os.Args)
 
-	// FIXME: Relative path
-	fontPath := filepath.Join("/home/mrjeem/dev/installer", "fonts", "Anek_Devanagari")
+	current_dir, err := filepath.Abs("./")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fontPath := filepath.Join(current_dir, "resources", "fonts", "Anek_Devanagari")
 	fontDb := gui.NewQFontDatabase()
 	fontDb.AddApplicationFont(fontPath)
 
