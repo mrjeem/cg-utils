@@ -1,4 +1,4 @@
-module github.com/mrjeem/installer
+module github.com/mrjeem/cg-utils
 
 go 1.23.0
 

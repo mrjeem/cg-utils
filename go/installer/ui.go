@@ -18,7 +18,7 @@ var (
 	logger = log.New(&buf, "CG Utils: ", log.Lshortfile)
 )
 
-var current_dir string
+var resources_dir, _ = filepath.Abs("./resources/")
 
 // --------------------------------
 
@@ -29,7 +29,7 @@ func newInstallerUI() *widgets.QMainWindow {
 	window.SetWindowTitle("Installer")
 	window.Resize2(850, 550)
 
-	stylesheet, err := os.ReadFile(filepath.Join(current_dir, "resources", "stylesheet.qss"))
+	stylesheet, err := os.ReadFile(filepath.Join(resources_dir, "stylesheet.qss"))
 	if err != nil {
 		logger.Printf("[Warning] Could not read style sheet...")
 	} else {
@@ -108,7 +108,7 @@ func browse(parent widgets.QWidget_ITF, dst *string) {
 
 	dialog := widgets.NewQFileDialog(parent, 0)
 	dialog.SetFileMode(widgets.QFileDialog__Directory)
-	selectedDir := dialog.GetExistingDirectory(parent, "Select Instalation Directory...", "~", widgets.QFileDialog__ShowDirsOnly)
+	selectedDir := dialog.GetExistingDirectory(parent, "Select Installation Directory...", "~", widgets.QFileDialog__ShowDirsOnly)
 	*dst = selectedDir
 }
 
@@ -118,15 +118,15 @@ func main() {
 
 	app := widgets.NewQApplication(len(os.Args), os.Args)
 
-	current_dir, err := filepath.Abs("./")
-	if err != nil {
-		logger.Fatal(err)
+	// Adding font to db
+	fontDb := gui.NewQFontDatabase()
+	fontDir := filepath.Join(resources_dir, "fonts", "Anek_Devanagari")
+	fontFiles, _ := filepath.Glob(filepath.Join(fontDir, "*.ttf"))
+	for _, file := range fontFiles {
+		fontDb.AddApplicationFont(file)
 	}
 
-	fontPath := filepath.Join(current_dir, "resources", "fonts", "Anek_Devanagari")
-	fontDb := gui.NewQFontDatabase()
-	fontDb.AddApplicationFont(fontPath)
-
+	// Applying font
 	font := gui.NewQFont2("Anek Devanagari", 10, 1, false)
 	font.SetStyleName("Regular")
 	app.SetFont(font, "")
