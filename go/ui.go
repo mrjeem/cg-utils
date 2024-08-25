@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"log"
 	"os"
 	"path/filepath"
@@ -10,7 +11,16 @@ import (
 	"github.com/therecipe/qt/widgets"
 )
 
+// --------------------------------
+
+var (
+	buf    bytes.Buffer
+	logger = log.New(&buf, "CG Utils: ", log.Lshortfile)
+)
+
 var current_dir string
+
+// --------------------------------
 
 func newInstallerUI() *widgets.QMainWindow {
 
@@ -21,7 +31,7 @@ func newInstallerUI() *widgets.QMainWindow {
 
 	stylesheet, err := os.ReadFile(filepath.Join(current_dir, "resources", "stylesheet.qss"))
 	if err != nil {
-		log.Printf("[Warning] Could not read style sheet...")
+		logger.Printf("[Warning] Could not read style sheet...")
 	} else {
 		window.SetStyleSheet(string(stylesheet))
 	}
@@ -103,11 +113,14 @@ func browse(parent widgets.QWidget_ITF, dst *string) {
 }
 
 func main() {
+	logger.SetPrefix("[ui.go] ")
+	logger.SetFlags(0)
+
 	app := widgets.NewQApplication(len(os.Args), os.Args)
 
 	current_dir, err := filepath.Abs("./")
 	if err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 
 	fontPath := filepath.Join(current_dir, "resources", "fonts", "Anek_Devanagari")

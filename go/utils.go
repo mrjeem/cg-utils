@@ -14,6 +14,7 @@ import (
 )
 
 func install(dst string) {
+
 	dst = filepath.Join(dst, "installer")
 	if _, err := os.Stat(dst); os.IsNotExist(err) {
 		os.MkdirAll(dst, 0775)
@@ -43,13 +44,13 @@ func installPython(dst string) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("\t[Fatal] Failed to download the python installer. Status code: %d", resp.StatusCode)
+		log.Fatalf("[Fatal] Failed to download the python installer. Status code: %d", resp.StatusCode)
 	}
 
 	filename := "python-3.12.5.exe"
 	pathname := filepath.Join(dst, filename)
 	if _, err := os.Stat(pathname); err == nil {
-		log.Printf("\t[Info] Python install exe already exists, removing first...")
+		log.Printf("[Info] Python install exe already exists, removing first...")
 		os.RemoveAll(pathname)
 	}
 	file, err := os.Create(pathname)
@@ -88,7 +89,7 @@ func installRez(dst string) {
 		log.Fatal(err)
 	} else {
 
-		log.Printf("\t[Info] Repo cloned successfully...")
+		log.Printf("[Info] Repo cloned successfully...")
 	}
 
 	setupPath := filepath.Join(dst, "rez_src", "install.py")
