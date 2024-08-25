@@ -36,16 +36,18 @@ func newInstallerUI() *widgets.QMainWindow {
 		window.SetStyleSheet(string(stylesheet))
 	}
 
-	mainWidget := widgets.NewQWidget(nil, 0)
-	window.SetCentralWidget(mainWidget)
+	widget := widgets.NewQWidget(nil, 0)
+	window.SetCentralWidget(widget)
 
 	mainLayout := widgets.NewQVBoxLayout()
-	mainWidget.SetLayout(mainLayout)
+	widget.SetLayout(mainLayout)
 
+	// Top Bar
 	topBarLayout := widgets.NewQHBoxLayout()
 	topBarLayout.AddStretch(1)
 	mainLayout.AddLayout(topBarLayout, 0)
 
+	// Close button
 	closeBtn := widgets.NewQPushButton2("x", nil)
 	closeBtn.SetStyleSheet("background-color: none; min-height: 40px; min-width: 40px;")
 	closeBtn.ConnectClicked(func(bool) {
@@ -53,54 +55,114 @@ func newInstallerUI() *widgets.QMainWindow {
 	})
 	topBarLayout.AddWidget(closeBtn, 0, 0)
 
-	mainLayout.AddStretch(1)
+	// Cancel Button
+	cancelBtn := widgets.NewQPushButton2("Cancel", nil)
+	cancelBtn.ConnectClicked(func(bool) { window.Close() })
 
-	welcomeLabel := widgets.NewQLabel2("Welcome to CG Utils!", nil, 0)
-	welcomeLabel.SetStyleSheet("font-size: 32px; min-height: 50px;")
-	mainLayout.AddWidget(welcomeLabel, 0, core.Qt__AlignCenter)
+	// Welcome screen
+	welcomeWidget(*mainLayout, cancelBtn)
 
-	mainLayout.AddSpacing(48)
+	return window
+}
 
+func welcomeWidget(mainLayout widgets.QVBoxLayout, cancelBtn widgets.QPushButton_ITF) {
+	// This widget
+	widget := widgets.NewQWidget(nil, 0)
+	mainLayout.AddWidget(widget, 0, 0)
+
+	// This widget's layout
+	layout := widgets.NewQVBoxLayout()
+	widget.SetLayout(layout)
+
+	// Welcome
+	label := widgets.NewQLabel2("Welcome to CG Utils!", nil, 0)
+	label.SetStyleSheet("font-size: 40px; min-height: 56px; margin-top: 64px;")
+	layout.AddWidget(label, 0, core.Qt__AlignCenter)
+
+	// Bottom bar
+	bottomBtnLayout := widgets.NewQHBoxLayout()
+	bottomBtnLayout.AddStretch(1)
+	layout.AddLayout(bottomBtnLayout, 0)
+
+	bottomBtnLayout.AddWidget(cancelBtn, 0, core.Qt__AlignCenter)
+
+	// Next button
+	next_btn := widgets.NewQPushButton2("Next", nil)
+	next_btn.ConnectClicked(func(bool) { widget.Hide(); baseInstallationWidget(mainLayout, cancelBtn) })
+	bottomBtnLayout.AddWidget(next_btn, 0, core.Qt__AlignCenter)
+	bottomBtnLayout.AddStretch(1)
+
+}
+
+func baseInstallationWidget(mainLayout widgets.QVBoxLayout, cancelBtn widgets.QPushButton_ITF) {
+
+	widget := widgets.NewQWidget(nil, 0)
+
+	layout := widgets.NewQVBoxLayout()
+	widget.SetLayout(layout)
+
+	baseDirLabel := widgets.NewQLabel2("Install Base Application", nil, 0)
+	baseDirLabel.SetStyleSheet("font-size: 32px; min-height: 56px; margin-bottom: 0px;")
+	layout.AddWidget(baseDirLabel, 0, core.Qt__AlignCenter)
+
+	info := widgets.NewQLabel2("This directory will be used to install the launcher and all the tools you select next/later.", nil, 0)
+	info.SetStyleSheet("margin-top: 0px; color: #afafaf;")
+	layout.AddWidget(info, 0, core.Qt__AlignCenter)
+
+	layout.AddStretch(1)
+
+	// Destination
 	dstLabel := widgets.NewQLabel2("Installation Directory:", nil, 0)
 	dstLabel.SetStyleSheet("margin-bottom: 0px; margin-left: 48px;")
-	mainLayout.AddWidget(dstLabel, 0, core.Qt__AlignLeft)
+	layout.AddWidget(dstLabel, 0, core.Qt__AlignLeft)
 
 	dstHLayout := widgets.NewQHBoxLayout()
-	mainLayout.AddLayout(dstHLayout, 1)
+	layout.AddLayout(dstHLayout, 1)
 
+	layout.AddStretch(1)
+
+	// Input Line Edit
 	dstInput := widgets.NewQLineEdit(nil)
 	dstInput.SetStyleSheet("margin-top: 0px; margin-left: 48px;")
 	dstHLayout.AddWidget(dstInput, 1, 0)
 
 	var dst string
+
+	// Browse Button
 	browseBtn := widgets.NewQPushButton2("Browse", nil)
 	browseBtn.SetStyleSheet("margin-top: 0px; margin-right: 48px;")
 	browseBtn.ConnectClicked(func(bool) {
-		browse(mainWidget, &dst)
+		browse(widget, &dst)
 		dstInput.SetText(dst)
 	})
 
 	dstHLayout.AddWidget(browseBtn, 0, 0)
 
-	mainLayout.AddSpacing(48)
-	mainLayout.AddStretch(1)
+	layout.AddStretch(1)
 
+	// Bottom bar
 	bottomBtnLayout := widgets.NewQHBoxLayout()
 	bottomBtnLayout.AddStretch(1)
-	mainLayout.AddLayout(bottomBtnLayout, 0)
+	layout.AddLayout(bottomBtnLayout, 0)
 
-	cancelBtn := widgets.NewQPushButton2("Cancel", nil)
-	cancelBtn.ConnectClicked(func(bool) { window.Close() })
-	bottomBtnLayout.AddWidget(cancelBtn, 0, 0)
+	// Cancel Button
+	bottomBtnLayout.AddWidget(cancelBtn, 0, core.Qt__AlignCenter)
 
+	// Back button
+	backBtn := widgets.NewQPushButton2("Back", nil)
+	backBtn.ConnectClicked(func(bool) { widget.Hide(); welcomeWidget(mainLayout, cancelBtn) })
+	bottomBtnLayout.AddWidget(backBtn, 0, core.Qt__AlignCenter)
+
+	// Install Button
 	installBtn := widgets.NewQPushButton2("Install", nil)
 	installBtn.ConnectClicked(func(bool) { install(dstInput.Text()) })
-	bottomBtnLayout.AddWidget(installBtn, 0, 0)
+	bottomBtnLayout.AddWidget(installBtn, 0, core.Qt__AlignCenter)
 
 	bottomBtnLayout.AddStretch(1)
 
-	mainLayout.AddStretch(1)
-	return window
+	layout.AddStretch(1)
+
+	mainLayout.AddWidget(widget, 0, 0)
 
 }
 
